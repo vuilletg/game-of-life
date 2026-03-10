@@ -1,31 +1,25 @@
 CC=g++
-CFLAGS=-Wall -O0 -g3 -I. -MMD -MP -Werror
+CFLAGS= -Wall -Werror
+CXXFLAGS=`wx-config --cxxflags`
+LDLIBS=`wx-config --libs`
 
-PROG=testGrille
+all: main
 
-# Sources et objets
-testGrille_SRCS := testGrille.cpp grille.cpp
-testGrille_OBJS := $(testGrille_SRCS:.cpp=.o)
+# On ajoute grille.o aux dépendances de main
+main: testGrilleGraphique.o fenetre.o grille.o
+	$(CC) $(CFLAGS) $(CXXFLAGS) $^ $(LDLIBS) -o $@ --save-temps
 
-# Fichiers .d générés
-DEPS := $(testGrille_SRCS:.cpp=.d)
+# Règle pour compiler testGrilleGraphique.o
+testGrilleGraphique.o: testGrilleGraphique.cpp testGrilleGraphique.h
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-# Cible par défaut
-all: $(PROG)
+# Ta règle existante pour fenetre.o
+fenetre.o: fenetre.cpp fenetre.h grille.h
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-# Règle pour le programme final
-$(PROG): $(testGrille_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+# NOUVELLE RÈGLE pour compiler grille.o
+grille.o: grille.cpp grille.h
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-# Règle pour les fichiers objets
-%.o: %.cpp
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-# Inclusion des dépendances
--include $(DEPS)
-
-# Nettoyage
 clean:
-	rm -rf *.o *.d $(PROG)
-
-.PHONY: all clean
+	rm -rf *.o *.s *.ii main

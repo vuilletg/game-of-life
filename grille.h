@@ -8,20 +8,23 @@
 
 
 class Grille {
-protected:
     int m;
     int n;
     std::vector<std::vector<bool>> plateau;
 public:
     Grille(int m , int n);
+    int getM();
+    int getN();
     void ajouter(int i, int j);
     void suprimer(int i, int j);
     void affiche ()const;
     bool estOccupe(int i, int j) const;
     int nbVoisins (int i, int j)const;
 };
-class Jeu : public Grille{
+class Jeu{
+    Grille grille;
 public:
+    Grille& getGrille();
     Jeu(int m , int n);
     void avance();
 };

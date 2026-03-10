@@ -7,7 +7,12 @@
 
 // Dans grille.cpp
 Grille::Grille(int m, int n) : m(m), n(n), plateau(m, std::vector<bool>(n, false)) {}
-
+int Grille::getM() {
+    return m;
+}
+int Grille::getN() {
+    return n;
+}
 void Grille::affiche() const {
     std::cout.flush();
     for (int i = 0; i < m; ++i) {
@@ -51,20 +56,29 @@ void Grille::ajouter(int i, int j) {
 void Grille::suprimer(int i, int j) {
     plateau[i][j]= false;
 }
-Jeu::Jeu(int m, int n): Grille(m,n) {}
+Jeu::Jeu(int m, int n): grille(m,n) {}
 
+Grille& Jeu::getGrille() {
+    return grille;
+}
 void Jeu::avance() {
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (!estOccupe(i,j)){
-                if(nbVoisins(i,j)==3){
-                    ajouter(i,j);
+    Grille prochaineGrille = grille;
+
+    for (int i = 0; i < grille.getM(); ++i) {
+        for (int j = 0; j < grille.getN(); ++j) {
+            int voisins = grille.nbVoisins(i, j);
+            bool estVivante = grille.estOccupe(i, j);
+
+            if (estVivante) {
+                if (voisins < 2 || voisins > 3) {
+                    prochaineGrille.suprimer(i, j);
                 }
-            }else{
-                if(nbVoisins(i,j)<=1 || nbVoisins(i,j)>=4){
-                    suprimer(i,j);
+            } else {
+                if (voisins == 3) {
+                    prochaineGrille.ajouter(i, j);
                 }
             }
         }
     }
+    grille = prochaineGrille;
 }
